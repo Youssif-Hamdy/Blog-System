@@ -1,26 +1,33 @@
 const User = require("../models/User");
 const AppError = require("../utils/AppError");
-const catchAsync = require("../utils/catchAsync");
 const { signToken } = require("../middleware/auth");
 
-exports.register = catchAsync(async (req, res) => {
-  const { username, email, password } = req.body;
-  const existing = await User.findOne({ email });
-  if (existing) {
-    throw new AppError("Email already registered", 400);
+exports.register = async (req, res, next) => {
+  try {
+    const { username, email, password } = req.body;
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ status: "error", message: "Email already registered" });
+    }
+    const user = await User.create({ username, email, password, role: "user" });
+    const token = signToken(user._id);
+    res.status(201).json({ status: "success", token, user });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
   }
-  const user = await User.create({ username, email, password, role: "user" });
-  const token = signToken(user._id);
-  res.status(201).json({ status: "success", token, user });
-});
+};
 
-exports.login = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email }).select("+password");
-  if (!user || !(await user.comparePassword(password))) {
-    throw new AppError("Invalid email or password", 401);
+exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).select("+password");
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ status: "error", message: "Invalid email or password" });
+    }
+    const token = signToken(user._id);
+    user.password = undefined;
+    res.json({ status: "success", token, user });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
   }
-  const token = signToken(user._id);
-  user.password = undefined;
-  res.json({ status: "success", token, user });
-});
+};

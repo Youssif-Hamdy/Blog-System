@@ -58,7 +58,7 @@ exports.deleteComment = catchAsync(async (req, res) => {
     req.user.role !== "super-admin" &&
     String(comment.author) !== String(req.user._id)
   ) {
-    throw new AppError("You can only delete your own comments", 403);
+    throw new AppError("You can only delete your own comment", 403);
   }
 
   await Comment.findByIdAndDelete(comment._id);

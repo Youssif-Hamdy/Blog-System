@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+
 const helmet = require("helmet");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
@@ -11,6 +12,7 @@ const groupRoutes = require("./routes/groupRoutes");
 const { globalErrorHandler, notFound } = require("./middleware/errorHandler");
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN || true, credentials: true }));

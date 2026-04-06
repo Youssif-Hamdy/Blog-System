@@ -37,7 +37,9 @@ const apiLimiter = rateLimit({
 app.get("/health", (req, res) => {
   res.json({ status: "success", message: "ok" });
 });
-
+app.get("/", (req, res) => {
+  res.json({ status: "success", message: "Blog API is running" });
+});
 app.use("/auth", authLimiter, authRoutes);
 app.use(apiLimiter);
 

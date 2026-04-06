@@ -9,7 +9,7 @@ function assertManageGroup(user, group) {
     return;
   }
   if (!isGroupAdmin(user._id, group)) {
-    throw new AppError("Only group admins can perform this act", 403);
+    throw new AppError("Only group admins can perform this action", 403);
   }
 }
 

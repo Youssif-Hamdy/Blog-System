@@ -9,7 +9,6 @@ module.exports = async (req, res) => {
     await connectDB();
     isConnected = true;
   }
-  // ✅ بدل app(req, res)
   return new Promise((resolve, reject) => {
     app(req, res, (err) => {
       if (err) reject(err);
